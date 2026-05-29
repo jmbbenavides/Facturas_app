@@ -2,8 +2,9 @@ import email
 import imaplib
 import os
 import re
-from datetime import datetime, timedelta
 import uuid
+from datetime import datetime, timedelta
+
 
 class GmailReader:
     def __init__(self, email_user, email_pass):
@@ -56,7 +57,7 @@ class GmailReader:
         equivalencias = {
             "all mail": ["all mail", "todos", "todo correo"],
             "spam": ["spam", "no deseado", "correos no deseados"],
-            "promotions": ["promotions", "promociones", "promocion"]
+            "promotions": ["promotions", "promociones", "promocion"],
         }
 
         for buzon in buzones_disponibles:
@@ -72,17 +73,27 @@ class GmailReader:
 
         return nombre
 
-    def buscar_y_descargar(self, carpetas, nit, nrc, fecha_desde, fecha_hasta, log_callback, thread_check, organizer):
+    def buscar_y_descargar(
+        self,
+        carpetas,
+        nit,
+        nrc,
+        fecha_desde,
+        fecha_hasta,
+        log_callback,
+        thread_check,
+        organizer,
+    ):
         self.connect()
         archivos_descargados = 0
         correos_procesados = 0
-        
+
         # Ampliar el rango para asegurar que capture hoy
         # Gmail a veces tiene desfases de zona horaria
         fecha_desde_str = (fecha_desde - timedelta(days=1)).strftime("%d-%b-%Y")
         fecha_hasta_str = (fecha_hasta + timedelta(days=1)).strftime("%d-%b-%Y")
-        criterio_fecha = f'(SINCE {fecha_desde_str} BEFORE {fecha_hasta_str})'
-        
+        criterio_fecha = f"(SINCE {fecha_desde_str} BEFORE {fecha_hasta_str})"
+
         buzones_disponibles = self._listar_buzones()
 
         for carpeta in carpetas:
@@ -102,32 +113,42 @@ class GmailReader:
 
                 ids = mensajes[0].split()
                 log_callback(f"📬 {carpeta_real}: encontrados {len(ids)} correos")
-                
+
                 for correo_id in ids:
-                    if not thread_check(): break
-                    
+                    if not thread_check():
+                        break
+
                     status, datos_correo = self.mail.fetch(correo_id, "(RFC822)")
                     mensaje = email.message_from_bytes(datos_correo[0][1])
                     fecha_correo = email.utils.parsedate_to_datetime(mensaje["date"])
-                    
+                    if fecha_correo is None:
+                        fecha_correo = datetime.now()
+                    elif fecha_correo.tzinfo is not None:
+                        fecha_correo = fecha_correo.astimezone().replace(tzinfo=None)
+
                     for parte in mensaje.walk():
                         nombre = parte.get_filename()
-                        if not nombre or not nombre.endswith((".json", ".pdf")): continue
-                        
+                        if not nombre or not nombre.endswith((".json", ".pdf")):
+                            continue
+
                         # Guardar archivo temporal en downloads
                         os.makedirs("downloads", exist_ok=True)
-                        ruta_temporal = os.path.join("downloads", f"{uuid.uuid4().hex[:8]}_{nombre}")
+                        ruta_temporal = os.path.join(
+                            "downloads", f"{uuid.uuid4().hex[:8]}_{nombre}"
+                        )
                         with open(ruta_temporal, "wb") as f:
                             f.write(parte.get_payload(decode=True))
-                        
-                        organizer.organizar_archivo_desde_ruta(ruta_temporal, nombre, fecha_correo)
+
+                        organizer.organizar_archivo_desde_ruta(
+                            ruta_temporal, nombre, fecha_correo
+                        )
                         archivos_descargados += 1
                         log_callback(f"💾 Guardado: {nombre}")
-                    
+
                     correos_procesados += 1
-                    
+
             except Exception as e:
                 log_callback(f"⚠️ Error en {carpeta}: {str(e)}")
-                            
+
         self.disconnect()
         return archivos_descargados, correos_procesados
