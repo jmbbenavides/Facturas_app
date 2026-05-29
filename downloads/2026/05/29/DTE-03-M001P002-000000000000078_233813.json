@@ -1,0 +1,117 @@
+{
+  "emisor": {
+    "nit": "06231408251102",
+    "nrc": "3689256",
+    "correo": "soporte.gruposolutecno@gmail.com",
+    "nombre": "Grupo Solutecno",
+    "telefono": "76648800",
+    "direccion": {
+      "municipio": "01",
+      "complemento": "Pendiente de configurar",
+      "departamento": "06"
+    },
+    "codEstable": "M001",
+    "codActividad": "46900",
+    "codEstableMH": "M001",
+    "codPuntoVenta": "P002",
+    "descActividad": "Venta al por mayor de otros productos",
+    "codPuntoVentaMH": "P002",
+    "nombreComercial": "Grupo Solutecno",
+    "tipoEstablecimiento": "01"
+  },
+  "resumen": {
+    "pagos": [
+      {
+        "plazo": null,
+        "codigo": "01",
+        "periodo": null,
+        "montoPago": 1.13,
+        "referencia": null
+      }
+    ],
+    "ivaRete1": 0,
+    "subTotal": 1,
+    "tributos": [
+      {
+        "valor": 0.13,
+        "codigo": "20",
+        "descripcion": "Impuesto al Valor Agregado 13%"
+      }
+    ],
+    "ivaPerci1": 0,
+    "reteRenta": 0,
+    "descuNoSuj": 0,
+    "saldoFavor": 0,
+    "totalDescu": 0,
+    "totalNoSuj": 0,
+    "totalPagar": 1.13,
+    "descuExenta": 0,
+    "totalExenta": 0,
+    "totalLetras": "UN 13/100 DOLARES",
+    "descuGravada": 0,
+    "totalGravada": 1,
+    "subTotalVentas": 1,
+    "totalNoGravado": 0,
+    "condicionOperacion": 1,
+    "numPagoElectronico": null,
+    "montoTotalOperacion": 1.13,
+    "porcentajeDescuento": 0
+  },
+  "apendice": null,
+  "receptor": {
+    "nit": "06140902221032",
+    "nrc": "3120029",
+    "correo": "jm8892663@gmail.com",
+    "nombre": "JOSUE BENAVIDES",
+    "telefono": "60717488",
+    "direccion": {
+      "municipio": "02",
+      "complemento": "jhsjdsndnsd",
+      "departamento": "05"
+    },
+    "codActividad": "58200",
+    "descActividad": "Edición de programas informáticos (software)",
+    "nombreComercial": null
+  },
+  "extension": null,
+  "ventaTercero": null,
+  "identificacion": {
+    "fecEmi": "2026-05-29",
+    "horEmi": "04:29:03",
+    "tipoDte": "03",
+    "version": 3,
+    "ambiente": "00",
+    "tipoModelo": 1,
+    "tipoMoneda": "USD",
+    "motivoContin": null,
+    "numeroControl": "DTE-03-M001P002-000000000000078",
+    "tipoOperacion": 1,
+    "codigoGeneracion": "83D4E848-4163-4B84-A5D5-230DB9794D82",
+    "tipoContingencia": null
+  },
+  "cuerpoDocumento": [
+    {
+      "psv": 0,
+      "codigo": null,
+      "numItem": 1,
+      "cantidad": 1,
+      "tipoItem": 1,
+      "tributos": [
+        "20"
+      ],
+      "noGravado": 0,
+      "precioUni": 1,
+      "uniMedida": 59,
+      "codTributo": null,
+      "montoDescu": 0,
+      "ventaNoSuj": 0,
+      "descripcion": "Frijoles Rojos La Chula",
+      "ventaExenta": 0,
+      "ventaGravada": 1,
+      "numeroDocumento": null
+    }
+  ],
+  "otrosDocumentos": null,
+  "documentoRelacionado": null,
+  "selloRecibido": "2026BD51127AAF1941C7B05D552753F9D6D1A8GW"
+}

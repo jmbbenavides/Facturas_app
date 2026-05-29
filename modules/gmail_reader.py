@@ -126,12 +126,12 @@ class GmailReader:
                     elif fecha_correo.tzinfo is not None:
                         fecha_correo = fecha_correo.astimezone().replace(tzinfo=None)
 
+                    attachments = []
                     for parte in mensaje.walk():
                         nombre = parte.get_filename()
                         if not nombre or not nombre.endswith((".json", ".pdf")):
                             continue
 
-                        # Guardar archivo temporal en downloads
                         os.makedirs("downloads", exist_ok=True)
                         ruta_temporal = os.path.join(
                             "downloads", f"{uuid.uuid4().hex[:8]}_{nombre}"
@@ -139,11 +139,50 @@ class GmailReader:
                         with open(ruta_temporal, "wb") as f:
                             f.write(parte.get_payload(decode=True))
 
-                        organizer.organizar_archivo_desde_ruta(
-                            ruta_temporal, nombre, fecha_correo
-                        )
+                        attachments.append((nombre, ruta_temporal))
+
+                    # Extraer fechas de JSON adjuntos primero para que los PDFs del mismo grupo usen la misma fecha
+                    json_fecha_por_base = {}
+                    for nombre, ruta_temporal in attachments:
+                        if nombre.lower().endswith(".json"):
+                            fecha_json = organizer._extract_date_from_json(
+                                ruta_temporal
+                            )
+                            if fecha_json is not None:
+                                json_fecha_por_base[os.path.splitext(nombre)[0]] = (
+                                    fecha_json
+                                )
+
+                    for nombre, ruta_temporal in attachments:
+                        fecha_usar_base = fecha_correo
+                        if nombre.lower().endswith(".pdf"):
+                            base = os.path.splitext(nombre)[0]
+                            fecha_usar_base = json_fecha_por_base.get(
+                                base, fecha_correo
+                            )
+
+                        try:
+                            ruta_destino, fecha_usar = (
+                                organizer.organizar_archivo_desde_ruta(
+                                    ruta_temporal, nombre, fecha_usar_base, log_callback
+                                )
+                            )
+                        except Exception:
+                            ruta_destino = organizer.organizar_archivo_desde_ruta(
+                                ruta_temporal, nombre, fecha_usar_base
+                            )
+                            fecha_usar = fecha_usar_base
+
                         archivos_descargados += 1
-                        log_callback(f"💾 Guardado: {nombre}")
+                        try:
+                            fecha_txt = (
+                                fecha_usar.strftime("%Y-%m-%d") if fecha_usar else "-"
+                            )
+                        except Exception:
+                            fecha_txt = str(fecha_usar)
+                        log_callback(
+                            f"💾 Guardado: {nombre} -> {ruta_destino} (fecha usada: {fecha_txt})"
+                        )
 
                     correos_procesados += 1
 
